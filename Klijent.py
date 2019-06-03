@@ -4,11 +4,50 @@ import random
 import threading
 import time
 from tkinter import ttk
+from tkinter import messagebox
+import socket
+
+# def proveraDropDown():
 
 
-def naruci():
-    print("poz")
 
+def poZatvaranju():
+    s.close()
+    okvir.destroy()
+
+def proveriUnose():
+    if nacinPlacanjaVar.get() == 0:
+        messagebox.showinfo("Upozorenje", "Morate odabrati način plaćanja")
+        return False
+    elif adresaVar.get().strip() == "" and brojTelefonaVar.get().strip() == "":
+        messagebox.showinfo("Upozorenje", "Polja za adresu i broj telefona moraju biti popunjena.")
+        return False
+    else:
+        return True
+
+def naruciPizzu():
+    print(dropVelicina.get())
+    if proveriUnose():
+        print(f'kecap: -{kecapVar.get()}-')
+        narudzbina = f'{dropVelicina.get()};' \
+            f'{dropVrsta.get()};' \
+            f'{kecapVar.get()},{majonezVar.get()},{ciliVar.get()},{origanoVar.get()},{govedjaVar.get()},{pilecaVar.get()};' \
+            f'{nacinPlacanjaVar.get()};' \
+            f'{adresaVar.get()};{brojTelefonaVar.get()};{unosNapomena.get("1.0",END)}'
+
+        print(narudzbina)
+        s.send(narudzbina.encode())
+        odgovorServera = s.recv(1024).decode()
+        unosOdgovorServera.insert(END, "odgovor servera" + "\n")
+        s.close()
+
+
+s = socket.socket()
+host = socket.gethostname()
+port = 12345
+s.connect((host, port))
+
+# --- Graficki interfejs ---
 
 padding=5
 okvir = tkinter.Tk()
@@ -19,21 +58,24 @@ okvir.option_add("*Font", "arial 14")
 naslov = tkinter.Label(okvir,text= "Poupunite porudžbinu:",bg="#8FC93A",width=50,height=3)
 naslov.grid(column=0,row =0,rowspan=3,columnspan=5,pady=(0,20),sticky=NW)
 
-naslov = tkinter.Label(okvir,text= "Odgovor servera:",bg="#E4CC37",width=30,height=3)
+naslov = tkinter.Label(okvir,text= "Odgovor picerije:",bg="#E4CC37",width=30,height=3)
 naslov.grid(column=5,row =0,rowspan=3,columnspan=5,pady=(0,20),sticky=NW)
 
 #Combobox-ovi
 textVelicina = tkinter.Label(okvir,text= "Veličina:")
 textVelicina.grid(column=0,row=3,pady=padding,sticky=E)
 
-dropVelicina = ttk.Combobox(okvir, values=[ 25,32, 50],width=23)
+
+dropVelicina = ttk.Combobox(okvir, state="readonly", values=[ 25,32, 50],width=23)
 dropVelicina.grid(column = 1,columnspan=4,row = 3,pady=padding,sticky=W)
+dropVelicina.current(0)
 
 textVrsta = tkinter.Label(okvir,text= "Vrsta:")
 textVrsta.grid(column=0,row=4,pady=padding,sticky=E)
 
-dropVrsta = ttk.Combobox(okvir, values=[ "Margarita","Funghi", "Quatro Stagione", "Vegeterian"],width=23)
+dropVrsta = ttk.Combobox(okvir, state="readonly", values=[ "Margarita","Funghi", "Quatro Stagione", "Vegeterian"],width=23)
 dropVrsta.grid(column = 1,columnspan=4,row = 4,pady=padding,sticky=W)
+dropVrsta.current(0)
 
 textDodatak = tkinter.Label(okvir,text= "Dodatak:")
 textDodatak.grid(column=0,row=5,pady=padding,sticky=E)
@@ -94,9 +136,10 @@ unosOdgovorServera = tkinter.Text(okvir,width=30)
 unosOdgovorServera.grid(column=5,row=3,rowspan=9,pady=padding)
 
 #dugme
-dugmeNaruci= tkinter.Button(okvir,text="Naruci",width=15,bg="#8FC93A",command=naruci)
+dugmeNaruci= tkinter.Button(okvir,text="Naruci",width=15,bg="#8FC93A",command=naruciPizzu)
 dugmeNaruci.grid(column=0,row=11,columnspan=5,pady=30)
 
 
-
+okvir.protocol("WM_DELETE_WINDOW", poZatvaranju)
 okvir.mainloop()
+# --- Graficki interfejs ---
