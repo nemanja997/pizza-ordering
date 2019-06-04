@@ -26,20 +26,22 @@ def proveriUnose():
         return True
 
 def naruciPizzu():
-    print(dropVelicina.get())
+    prilozi = []
+
     if proveriUnose():
-        print(f'kecap: -{kecapVar.get()}-')
         narudzbina = f'{dropVelicina.get()};' \
             f'{dropVrsta.get()};' \
-            f'{kecapVar.get()},{majonezVar.get()},{ciliVar.get()},{origanoVar.get()},{govedjaVar.get()},{pilecaVar.get()};' \
+            f'{("","Kečap")[kecapVar.get()]},{("","Majonez")[majonezVar.get()]},{("","Čili")[ciliVar.get()]},' \
+            f'{("","Origano")[origanoVar.get()]},{("","Govedja salata")[govedjaVar.get()]},{("","Pileća salata")[pilecaVar.get()]};' \
             f'{nacinPlacanjaVar.get()};' \
-            f'{adresaVar.get()};{brojTelefonaVar.get()};{unosNapomena.get("1.0",END)}'
+            f'{adresaVar.get()};' \
+            f'{brojTelefonaVar.get()};' \
+            f'{unosNapomena.get("1.0",END)}'
 
         print(narudzbina)
         s.send(narudzbina.encode())
         odgovorServera = s.recv(1024).decode()
-        unosOdgovorServera.insert(END, "odgovor servera" + "\n")
-        s.close()
+        unosOdgovorServera.insert(END, odgovorServera + "\n")
 
 
 s = socket.socket()
